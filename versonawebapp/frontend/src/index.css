@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Full-viewport, no-scroll baseline ---- */
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* ✅ keeps layout stable (landing can still scroll normally) */
+  html,
+  body,
+  #root {
+  
+  min-height: 100vh;         /* ✅ ensures root can grow if sections are tall */
+
+
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0B0B0B;
+    color: #ffffff;
+    overflow-x: hidden;
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin: 0;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-metallic-gold text-jet-black font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:bg-opacity-90 hover:shadow-lg hover:shadow-metallic-gold/20;
+  }
+
+  .btn-outline {
+    @apply border-2 border-metallic-gold text-metallic-gold font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:bg-metallic-gold hover:text-jet-black;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-metallic-gold to-warm-orange bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl;
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 30px rgba(108, 77, 255, 0.3);
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8941F;
+}
+
+/* Particle animation */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(212, 175, 55, 0.6);
+  border-radius: 50%;
+  animation: float 8s infinite ease-in-out;
+}
+
+.particle:nth-child(2n) {
+  background: rgba(108, 77, 255, 0.4);
+  animation-delay: -2s;
+  animation-duration: 10s;
+}
+
+.particle:nth-child(3n) {
+  background: rgba(78, 205, 196, 0.5);
+  animation-delay: -4s;
+  animation-duration: 12s;
+}
+
+/* ✅ Prevent Chrome autofill from turning inputs white */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.06) inset;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* ✅ Remove browser-built-in password reveal icons (fixes “two eyes”) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+/* ✅ Premium shimmer animation (used on Create button) */
+@keyframes shimmer {
+  0% { transform: translateX(-60%) rotate(12deg); }
+  100% { transform: translateX(60%) rotate(12deg); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================================
+   ✅ Premium Animated Border Ring Button (Navbar Sign Up)
+   ========================================================= */
+
+@keyframes ringShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.ring-btn {
+  position: relative;
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 1px; /* thin border */
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15),
+    rgba(139, 92, 246, 0.95),
+    rgba(255, 255, 255, 0.12),
+    rgba(139, 92, 246, 0.95),
+    rgba(139, 92, 246, 0.15)
+  );
+  background-size: 200% 100%;
+  animation: ringShift 2.6s linear infinite;
+}
+
+.ring-btn > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 14px;   /* ✅ fits h-9 pill perfectly */
+  line-height: 1;      /* ✅ removes vertical extra space */
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  background: rgba(11, 11, 11, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.ring-btn:hover > span {
+  background: rgba(11, 11, 11, 0.62);
+}
+
+/* Premium feature card edge: black → purple */
+.feature-shell {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.95),
+    rgba(139, 92, 246, 0.28),
+    rgba(0, 0, 0, 0.85)
+  );
+}
+
+/* Subtle grain overlay (static, gives life without motion) */
+/* ===== Features panel like screenshot (purple top → dark bottom) ===== */
+.feature-panel {
+  background: radial-gradient(
+      1100px circle at 50% -18%,
+      rgba(139, 92, 246, 0.95),
+      rgba(139, 92, 246, 0.35) 40%,
+      rgba(0, 0, 0, 0.85) 70%,
+      rgba(0, 0, 0, 0.95) 100%
+    );
+}
+
+/* subtle inner glow + depth */
+.feature-panel-glow {
+  background:
+    radial-gradient(900px circle at 50% -10%, rgba(255,255,255,0.10), transparent 55%),
+    radial-gradient(700px circle at 20% 70%, rgba(139,92,246,0.12), transparent 60%),
+    radial-gradient(700px circle at 80% 70%, rgba(139,92,246,0.12), transparent 60%);
+}
+
+/* static grain (alive but not moving) */
+.feature-grain {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+/* ✅ Animated connecting line (premium) */
+@keyframes featureLineShift {
+  0% { background-position: 0% 50%; opacity: 0.55; }
+  50% { opacity: 0.95; }
+  100% { background-position: 200% 50%; opacity: 0.55; }
+}
+
+.feature-line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.10),
+    rgba(196, 181, 253, 0.55),
+    rgba(139, 92, 246, 0.10),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: featureLineShift 2.8s linear infinite;
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.18);
+}
