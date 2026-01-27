@@ -105,12 +105,12 @@ Frontend runs at: http://localhost:3000
 ## 📚 Documentation
 
 - **API Docs:** http://localhost:8000/docs (Swagger UI)
-- **Admin Dashboard:** http://localhost:8000/api/admin/analytics?admin_key=admin123
+- **Admin Dashboard:** http://localhost:8000/api/admin/analytics?admin_key=YOUR_ADMIN_KEY
 
 ## 🔒 Security
 
 - JWT-based authentication
-- Password hashing with bcrypt
+- Password hashing with SHA256 + salt
 - Urdu text validation (80%+ Urdu characters required)
 - Credit-based usage limiting
 

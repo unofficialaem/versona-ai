@@ -1,4 +1,4 @@
-# Awaaz AI - Urdu Voice Generation Platform
+# Versona AI - Urdu Voice Generation Platform
 # Python dependencies
 
 # Core
