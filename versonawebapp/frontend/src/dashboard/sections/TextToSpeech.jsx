@@ -575,18 +575,6 @@ export default function TextToSpeech() {
                       <Download size={14} />
                       Download
                     </button>
-                    <button
-                      onClick={() => window.open(`http://127.0.0.1:8000${generationResult.visualization_url}`, '_blank')}
-                      className="
-                        flex items-center gap-2 px-3 py-2 rounded-lg
-                        bg-gradient-to-r from-iris-600 to-purple-600
-                        text-sm font-medium text-white
-                        hover:brightness-110 transition
-                      "
-                    >
-                      <ImageIcon size={14} />
-                      View All
-                    </button>
                   </div>
                 </div>
               </div>
