@@ -312,12 +312,12 @@ export default function Profile() {
     });
 
     if (result.success) {
-      // console.log(result)
       toast.success("Profile updated successfully!");
-      setProfile(prev => ({ ...prev, username: result.data.profile.username }));
+      // Backend returns: { success, message, user: { username, ... } }
+      const updatedUser = result.data.user || result.data;
+      setProfile(prev => ({ ...prev, username: updatedUser.username || profile.username }));
     } else {
       toast.error(result.error || "Failed to update profile");
-      // console.log(result);
     }
 
     setSaving(false);
@@ -522,8 +522,8 @@ function PasswordResetModal({ onClose }) {
       return;
     }
 
-    if (form.new_password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+    if (form.new_password.length < 6) {
+      toast.error("Password must be at least 6 characters");
       return;
     }
 
