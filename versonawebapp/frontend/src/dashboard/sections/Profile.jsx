@@ -228,7 +228,7 @@ const getAuthToken = () => {
 // API fetch helper
 const apiFetch = async (endpoint, options = {}) => {
   const token = getAuthToken();
-  
+
   const defaultOptions = {
     headers: {
       'Content-Type': 'application/json',
@@ -252,9 +252,9 @@ const apiFetch = async (endpoint, options = {}) => {
     return { success: true, data };
   } catch (error) {
     console.error('API Error:', error);
-    return { 
-      success: false, 
-      error: error.message || 'Something went wrong' 
+    return {
+      success: false,
+      error: error.message || 'Something went wrong'
     };
   }
 };
@@ -281,12 +281,16 @@ export default function Profile() {
   const fetchProfile = async () => {
     setLoading(true);
     const result = await apiFetch('/profile/');
-    
+
     if (result.success) {
+      // Backend returns: { success, user: { email, username, ... }, account: { ... } }
+      const userData = result.data.user || result.data;
       setProfile({
-        username: result.data.username || "",
-        Email: result.data.Email || "",
-        member_since: profile.member_since // Keep the default or update if API provides
+        username: userData.username || "",
+        Email: userData.email || "", // Backend returns lowercase 'email'
+        member_since: userData.created_at
+          ? new Date(userData.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          : "January 2025"
       });
     } else {
       toast.error(result.error || "Failed to load profile data");
@@ -301,7 +305,7 @@ export default function Profile() {
     }
 
     setSaving(true);
-    
+
     const result = await apiFetch('/updateprofile/', {
       method: 'PUT',
       body: { username: profile.username }
@@ -313,9 +317,9 @@ export default function Profile() {
       setProfile(prev => ({ ...prev, username: result.data.profile.username }));
     } else {
       toast.error(result.error || "Failed to update profile");
-// console.log(result);
+      // console.log(result);
     }
-    
+
     setSaving(false);
   };
 
@@ -355,7 +359,7 @@ export default function Profile() {
           },
         }}
       />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -409,7 +413,7 @@ export default function Profile() {
 
               <input
                 value={profile.username}
-                onChange={(e) => setProfile({...profile, username: e.target.value})}
+                onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                 className="
                   w-full rounded-lg
                   bg-black/40 border border-white/10
@@ -420,7 +424,7 @@ export default function Profile() {
             </div>
 
             <div className="flex justify-end">
-              <button 
+              <button
                 onClick={handleUpdateProfile}
                 disabled={saving}
                 className="
@@ -551,11 +555,11 @@ function PasswordResetModal({ onClose }) {
   };
 
   const getStepContent = () => {
-    switch(step) {
+    switch (step) {
       case 1:
         return (
           <>
-            <Input 
+            <Input
               type="password"
               placeholder="Current password"
               value={form.old_password}
@@ -580,14 +584,14 @@ function PasswordResetModal({ onClose }) {
       case 2:
         return (
           <>
-            <Input 
+            <Input
               type="password"
               placeholder="New password"
               value={form.new_password}
               onChange={(e) => handleChange('new_password', e.target.value)}
               disabled={loading}
             />
-            <Input 
+            <Input
               type="password"
               placeholder="Confirm new password"
               value={form.confirm_password}
