@@ -131,6 +131,14 @@ async def generate_tts(
         if not text:
             raise HTTPException(status_code=400, detail="Text is required")
         
+        # Character limit
+        MAX_CHARS = 2000
+        if len(text) > MAX_CHARS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Text exceeds {MAX_CHARS} character limit. Current: {len(text)} characters"
+            )
+        
         # Validate Urdu language
         if not is_urdu_text(text):
             raise HTTPException(

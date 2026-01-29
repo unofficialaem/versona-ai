@@ -110,24 +110,33 @@ async def login(credentials: UserLogin):
 
 
 @router.post("/forgot-password/")
-async def forgot_password(email: str):
+@router.post("/forgot_password/")  # Alias for frontend compatibility
+async def forgot_password(data: dict):
     """Request password reset link"""
     try:
+        from auth.email_utils import send_password_reset_email
+        
+        email = data.get("email", "").lower().strip()
+        
+        if not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
         db = get_database()
         user = await get_user_by_email(db, email)
         
         # Always return success (don't reveal if email exists)
         if user:
             reset_token = create_password_reset_token(email)
-            # In production, send this via email
-            # For now, we'll just return it
-            print(f"Password reset token for {email}: {reset_token}")
+            # Send email
+            send_password_reset_email(email, reset_token)
         
         return {
             "success": True,
             "message": "If an account exists for this email, a password reset link has been sent."
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

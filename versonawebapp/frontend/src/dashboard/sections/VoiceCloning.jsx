@@ -215,7 +215,7 @@ export default function VoiceCloning() {
 
         <button
           onClick={handleGenerate}
-          disabled={!text.trim() || isGenerating}
+          disabled={!text.trim() || isGenerating || text.length > 2000}
           className="
             mt-4 inline-flex items-center justify-center gap-2
             rounded-lg bg-iris-600 px-4 py-3
@@ -241,6 +241,11 @@ export default function VoiceCloning() {
             </>
           )}
         </button>
+
+        {/* Character counter */}
+        <div className={`mt-2 text-xs text-right ${text.length > 2000 ? 'text-red-400' : 'text-white/40'}`}>
+          {text.length} / 2000 chars
+        </div>
       </section>
 
       {/* ================= PREVIEW / RESULT ================= */}

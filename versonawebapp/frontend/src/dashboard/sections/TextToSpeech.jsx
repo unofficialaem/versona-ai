@@ -776,7 +776,7 @@ export default function TextToSpeech() {
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleGenerate}
-                  disabled={!text.trim() || isGenerating}
+                  disabled={!text.trim() || isGenerating || text.length > 2000}
                   className="
                     flex items-center gap-2 rounded-xl
                     bg-gradient-to-r from-iris-600 to-indigo-600
@@ -801,8 +801,8 @@ export default function TextToSpeech() {
                 </button>
 
                 {text && (
-                  <div className="text-xs text-white/40 text-center">
-                    {text.length} chars
+                  <div className={`text-xs text-center ${text.length > 2000 ? 'text-red-400' : 'text-white/40'}`}>
+                    {text.length} / 2000 chars
                   </div>
                 )}
               </div>
