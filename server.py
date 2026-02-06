@@ -52,6 +52,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Enable CORS for frontend - MUST be before routes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Include all routes
 app.include_router(auth_router)
 app.include_router(tts_router)
@@ -62,15 +71,6 @@ app.include_router(history_router)
 # Static files for audio
 from fastapi.staticfiles import StaticFiles
 app.mount("/static/audio", StaticFiles(directory=".tmp/audio"), name="static_audio")
-
-# Enable CORS for frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 # ==================== Models ====================
