@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, Trash2, Download, Clock, Headphones, Wand2, MessageSquare, Volume2 } from "lucide-react";
 import toast from 'react-hot-toast';
+import { HISTORY_API, API_BASE_URL } from '../../config/api';
 
 /* ======================================================
    HISTORY - Unified Data and Audio Access
@@ -18,7 +19,7 @@ export default function History() {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://127.0.0.1:8000/history/', {
+      const response = await fetch(`${HISTORY_API}/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,7 +39,7 @@ export default function History() {
   const deleteItem = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://127.0.0.1:8000/history/${id}`, {
+      const response = await fetch(`${HISTORY_API}/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -128,7 +129,7 @@ function HistoryRow({ item, onDelete }) {
   const audioRef = useRef(null);
 
   // Build static URL
-  const backendUrl = "http://localhost:8000"; // Can be changed to dynamic if needed
+  const backendUrl = API_BASE_URL;
   const filename = item.audio_path ? item.audio_path.split(/[\\/]/).pop() : null;
   const audioUrl = filename ? `${backendUrl}/static/audio/${filename}` : null;
 

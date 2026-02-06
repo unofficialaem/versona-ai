@@ -224,6 +224,7 @@ import {
   Check
 } from "lucide-react";
 import toast from 'react-hot-toast';
+import { TTS_API } from '../../config/api';
 
 // API fetch helper
 const apiFetch = async (endpoint, options = {}) => {
@@ -242,7 +243,7 @@ const apiFetch = async (endpoint, options = {}) => {
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/tts${endpoint}`, defaultOptions);
+    const response = await fetch(`${TTS_API}${endpoint}`, defaultOptions);
     const data = await response.json();
 
     if (!response.ok) {

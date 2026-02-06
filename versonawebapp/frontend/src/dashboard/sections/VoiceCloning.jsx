@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Play, Wand2, Pause, Download, Volume2 } from "lucide-react";
 import toast from 'react-hot-toast';
+import { VOICE_API } from '../../config/api';
 
 import mareebAvatar from "../../assets/mareeb.svg";
 import aleezaAvatar from "../../assets/aleeza.svg";
@@ -52,7 +53,7 @@ export default function VoiceCloning() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://127.0.0.1:8000/voice-cloning/generate/', {
+      const response = await fetch(`${VOICE_API}/generate/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -216,9 +216,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Mail, User, ShieldCheck, Loader2 } from "lucide-react";
 import toast, { Toaster } from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/api';
 
-// API base URL
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// API base URL imported from config
+const API_PATH = `${API_BASE_URL}/api`;
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -242,7 +243,7 @@ const apiFetch = async (endpoint, options = {}) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, defaultOptions);
+    const response = await fetch(`${API_PATH}${endpoint}`, defaultOptions);
     const data = await response.json();
 
     if (!response.ok) {

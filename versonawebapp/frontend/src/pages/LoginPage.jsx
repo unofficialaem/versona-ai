@@ -52,7 +52,7 @@
 //   const [submitting, setSubmitting] = useState(false);
 //   const [showReset, setShowReset] = useState(false);
 
-  
+
 //   const btnRef = useRef(null);
 //   const [btnXY, setBtnXY] = useState({ x: 50, y: 50 });
 //   const navigate = useNavigate();
@@ -115,10 +115,10 @@
 //       // Store token and user info in localStorage
 //       localStorage.setItem('token', data.token);
 //       localStorage.setItem('userInfo', JSON.stringify(data.user_info));
-      
+
 //       // Navigate to dashboard
 //       navigate("/dashboard");
-      
+
 //     } catch (error) {
 //       setAuthError(error.message || "An error occurred during login");
 //       console.error("Login error:", error);
@@ -415,9 +415,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ParticleBackground from "../components/ParticleBackground";
 import toast, { Toaster } from 'react-hot-toast';
+import { API_BASE_URL, AUTH_API } from '../config/api';
 
-// API base URL
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// API base URL imported from config
 
 // API fetch helper for non-auth requests
 const apiFetchPublic = async (endpoint, options = {}) => {
@@ -433,7 +433,7 @@ const apiFetchPublic = async (endpoint, options = {}) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, defaultOptions);
+    const response = await fetch(`${API_BASE_URL}/api${endpoint}`, defaultOptions);
     const data = await response.json();
 
     if (!response.ok) {
@@ -443,9 +443,9 @@ const apiFetchPublic = async (endpoint, options = {}) => {
     return { success: true, data };
   } catch (error) {
     console.error('API Error:', error);
-    return { 
-      success: false, 
-      error: error.message || 'Something went wrong' 
+    return {
+      success: false,
+      error: error.message || 'Something went wrong'
     };
   }
 };
@@ -499,7 +499,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showReset, setShowReset] = useState(false);
 
-  
+
   const btnRef = useRef(null);
   const [btnXY, setBtnXY] = useState({ x: 50, y: 50 });
   const navigate = useNavigate();
@@ -544,7 +544,7 @@ export default function LoginPage() {
       setSubmitting(true);
 
       // API call to your backend
-      const response = await fetch('http://127.0.0.1:8000/api/login/', {
+      const response = await fetch(AUTH_API.login, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -562,10 +562,10 @@ export default function LoginPage() {
       // Store token and user info in localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('userInfo', JSON.stringify(data.user_info));
-      
+
       // Navigate to dashboard
       navigate("/dashboard");
-      
+
     } catch (error) {
       setAuthError(error.message || "An error occurred during login");
       console.error("Login error:", error);
@@ -738,7 +738,7 @@ export default function LoginPage() {
                     className="text-xs text-iris-400 hover:text-iris-300 hover:underline underline-offset-4 transition"
                     onClick={() => setShowReset(true)}
                   >
-                  Forgot password?
+                    Forgot password?
                   </button>
 
                 </div>
@@ -906,7 +906,7 @@ function PasswordResetModal({ onClose }) {
               className="w-full rounded-lg bg-black/40 border border-white/10 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-iris-500/60"
               disabled={loading}
             />
-            
+
             {error && (
               <div className="rounded-lg border border-red-400/20 bg-red-500/10 p-2 text-sm text-red-300">
                 {error}

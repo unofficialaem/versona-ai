@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import ParticleBackground from "../components/ParticleBackground";
+import { AUTH_API } from "../config/api";
 
 /** Clean, visual eye icon (inline SVG) */
 function EyeIcon({ open }) {
@@ -175,7 +176,7 @@ export default function SignupPage() {
       console.log("Signup payload:", signupData);
 
       // API call to your backend
-      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+      const response = await fetch(AUTH_API.register, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +189,7 @@ export default function SignupPage() {
       if (!response.ok) {
         // Handle validation errors from backend
         const errorMessages = [];
-        
+
         // Check for field-specific errors
         if (data.username) {
           if (Array.isArray(data.username)) {
@@ -197,7 +198,7 @@ export default function SignupPage() {
             errorMessages.push(`Username: ${data.username}`);
           }
         }
-        
+
         if (data.Email) {
           if (Array.isArray(data.Email)) {
             errorMessages.push(`Email: ${data.Email.join(', ')}`);
@@ -205,7 +206,7 @@ export default function SignupPage() {
             errorMessages.push(`Email: ${data.Email}`);
           }
         }
-        
+
         if (data.password) {
           if (Array.isArray(data.password)) {
             errorMessages.push(`Password: ${data.password.join(', ')}`);
@@ -213,22 +214,22 @@ export default function SignupPage() {
             errorMessages.push(`Password: ${data.password}`);
           }
         }
-        
+
         // If no specific field errors, check for generic error
         if (errorMessages.length === 0 && data.error) {
           errorMessages.push(data.error);
         } else if (errorMessages.length === 0) {
           errorMessages.push('Registration failed. Please try again.');
         }
-        
+
         throw new Error(errorMessages.join(' '));
       }
 
       // ✅ Success - go to login page
-      navigate("/login", { 
-        state: { 
-          successMessage: "Account created successfully! Please sign in." 
-        } 
+      navigate("/login", {
+        state: {
+          successMessage: "Account created successfully! Please sign in."
+        }
       });
 
     } catch (error) {

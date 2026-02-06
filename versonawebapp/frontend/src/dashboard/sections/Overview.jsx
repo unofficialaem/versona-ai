@@ -12,6 +12,7 @@ import {
 import { Clock, Activity, Zap, Headphones, Wand2, MessageSquare, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
+import { HISTORY_API } from '../../config/api';
 
 export default function Overview() {
   const [stats, setStats] = useState(null);
@@ -27,7 +28,7 @@ export default function Overview() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://127.0.0.1:8000/history/stats', {
+      const response = await fetch(`${HISTORY_API}/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

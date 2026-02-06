@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Upload, Play, Wand2, Pause, Download, Trash2, CheckCircle2 } from "lucide-react";
 import toast from 'react-hot-toast';
+import { STS_API } from '../../config/api';
 
 // Gender icons (SVGs placed in assets folder)
 import maleIcon from "../../assets/male.svg";
@@ -75,7 +76,7 @@ export default function AudioToAudio() {
       formData.append('file', file);
       formData.append('voice_type', selectedVoice);
 
-      const response = await fetch('http://127.0.0.1:8000/sts/convert/', {
+      const response = await fetch(`${STS_API}/convert/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

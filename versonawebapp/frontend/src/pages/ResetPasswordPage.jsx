@@ -3,9 +3,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion"; // Added AnimatePresence here
 import ParticleBackground from "../components/ParticleBackground";
 import toast, { Toaster } from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
-// API base URL
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// API base URL imported from config
+const API_PATH = `${API_BASE_URL}/api`;
 
 // API fetch helper for non-auth requests
 const apiFetchPublic = async (endpoint, options = {}) => {
@@ -21,7 +22,7 @@ const apiFetchPublic = async (endpoint, options = {}) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, defaultOptions);
+    const response = await fetch(`${API_PATH}${endpoint}`, defaultOptions);
     const data = await response.json();
 
     if (!response.ok) {
@@ -31,9 +32,9 @@ const apiFetchPublic = async (endpoint, options = {}) => {
     return { success: true, data };
   } catch (error) {
     console.error('API Error:', error);
-    return { 
-      success: false, 
-      error: error.message || 'Something went wrong' 
+    return {
+      success: false,
+      error: error.message || 'Something went wrong'
     };
   }
 };
@@ -93,10 +94,10 @@ const helperAnim = {
 export default function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
-  
-  const [form, setForm] = useState({ 
-    new_password: "", 
-    confirm_password: "" 
+
+  const [form, setForm] = useState({
+    new_password: "",
+    confirm_password: ""
   });
   const [submittedOnce, setSubmittedOnce] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -115,7 +116,7 @@ export default function ResetPasswordPage() {
       toast.error("Invalid reset link");
       return;
     }
-    
+
     // We could validate the token here by making an API call
     // For now, just assume it's valid if it exists
     setValidatingToken(false);
@@ -129,13 +130,13 @@ export default function ResetPasswordPage() {
 
   const errors = React.useMemo(() => {
     const e = {};
-    
+
     if (!form.new_password) {
       e.new_password = "New password is required";
     } else if (form.new_password.length < 8) {
       e.new_password = "Password must be at least 8 characters";
     }
-    
+
     if (!form.confirm_password) {
       e.confirm_password = "Please confirm your password";
     } else if (form.new_password !== form.confirm_password) {
@@ -177,7 +178,7 @@ export default function ResetPasswordPage() {
       if (result.success) {
         setSuccess(true);
         toast.success("Password reset successfully!");
-        
+
         // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate("/login");
@@ -185,7 +186,7 @@ export default function ResetPasswordPage() {
       } else {
         throw new Error(result.error || 'Password reset failed');
       }
-      
+
     } catch (error) {
       setAuthError(error.message || "An error occurred while resetting password");
       toast.error(error.message || "An error occurred while resetting password");
@@ -384,7 +385,7 @@ export default function ResetPasswordPage() {
                         <BangIcon />
                       </span>
                     )}
-                    
+
                     {showErrors && !errors.new_password && form.new_password && (
                       <span className="absolute right-11 top-1/2 -translate-y-1/2">
                         <CheckIcon />
@@ -428,7 +429,7 @@ export default function ResetPasswordPage() {
                         <BangIcon />
                       </span>
                     )}
-                    
+
                     {showErrors && !errors.confirm_password && form.confirm_password && form.new_password === form.confirm_password && (
                       <span className="absolute right-11 top-1/2 -translate-y-1/2">
                         <CheckIcon />
