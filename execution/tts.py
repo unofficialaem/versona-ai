@@ -14,10 +14,10 @@ BASE_URL = "https://api.elevenlabs.io/v1"
 
 # Default voice IDs (you can get these from ElevenLabs dashboard or /v1/voices)
 DEFAULT_VOICES = {
-    "female-1": "21m00Tcm4TlvDq8ikWAM",  # Rachel
-    "female-2": "AZnzlk1XvdvUeBnXmlld",  # Domi
-    "female-3": "EXAVITQu4vr4xnSDxMaL",  # Bella
-    "male-1": "VR6AewLTigWG4xSOukaG",    # Arnold
+    "female-1": "RwXLkVKnRloV1UPh3Ccx",  # Rachel
+    "female-2": "1Z7Y8o9cvUeWq8oLKgMY",  # Domi
+    "female-3": "8FsOrsZSELg9otqX9nPu",  # Bella
+    "male-1": "Mbwx1ZAXuMdYGtJRjvvQ",    # Arnold
 }
 
 
