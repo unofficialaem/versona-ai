@@ -11,7 +11,7 @@ import re
 import base64
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
@@ -119,6 +119,7 @@ async def get_text_suggestions(user: dict = Depends(get_current_user)):
 @router.post("/tts/generate/")
 async def generate_tts(
     request: TTSGenerateRequest,
+    req: Request,
     user: dict = Depends(get_current_user)
 ):
     """
@@ -186,7 +187,7 @@ async def generate_tts(
         
         return {
             "success": True,
-            "audio_url": f"http://127.0.0.1:8000/tts/audio/{audio_filename}",
+            "audio_url": f"{req.base_url}tts/audio/{audio_filename}",
             "audio_id": audio_id,
             "duration": round(estimated_duration, 2),
             "sample_rate": 44100,
@@ -205,6 +206,7 @@ async def generate_tts(
 
 @router.post("/upload/")
 async def upload_text_file(
+    req: Request,
     file: UploadFile = File(...),
     voice_id: Optional[str] = Form(None),
     user: dict = Depends(get_current_user)
@@ -294,7 +296,7 @@ async def upload_text_file(
         
         return {
             "success": True,
-            "audio_url": f"http://127.0.0.1:8000/tts/audio/{audio_filename}",
+            "audio_url": f"{req.base_url}tts/audio/{audio_filename}",
             "audio_id": audio_id,
             "duration": round(estimated_duration, 2),
             "text_length": text_length,

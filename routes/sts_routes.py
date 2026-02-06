@@ -7,7 +7,7 @@ import os
 import base64
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Request
 from fastapi.responses import FileResponse
 from typing import Optional
 
@@ -51,6 +51,7 @@ async def get_sts_voices():
 
 @router.post("/convert/")
 async def convert_audio(
+    req: Request,
     file: UploadFile = File(...),
     voice_type: str = Form(...),  # "male" or "female"
     user: dict = Depends(get_current_user)
@@ -114,7 +115,7 @@ async def convert_audio(
         
         return {
             "success": True,
-            "audio_url": f"http://127.0.0.1:8000/sts/audio/{output_filename}",
+            "audio_url": f"{req.base_url}sts/audio/{output_filename}",
             "audio_id": output_id,
             "voice_type": voice_type,
             "input_size": len(content),

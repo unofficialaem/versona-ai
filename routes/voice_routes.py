@@ -9,7 +9,7 @@ import re
 import base64
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
 
@@ -96,6 +96,7 @@ async def get_cloned_voices():
 @router.post("/generate/")
 async def generate_cloned_voice(
     request: VoiceCloningRequest,
+    req: Request,
     user: dict = Depends(get_current_user)
 ):
     """
@@ -173,7 +174,7 @@ async def generate_cloned_voice(
         
         return {
             "success": True,
-            "audio_url": f"http://127.0.0.1:8000/voice-cloning/audio/{audio_filename}",
+            "audio_url": f"{req.base_url}voice-cloning/audio/{audio_filename}",
             "audio_id": audio_id,
             "voice": CLONED_VOICES[voice_id]["name"],
             "text_length": text_length,
