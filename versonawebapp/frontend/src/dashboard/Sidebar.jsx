@@ -19,9 +19,9 @@ export default function Sidebar() {
     "bg-iris-600/20 text-white shadow-[inset_0_0_0_1px_rgba(139,92,246,0.35)]";
 
   return (
-    <aside className="w-64 shrink-0 h-full flex flex-col border-r border-white/10 bg-black/70 backdrop-blur-xl">
+    <aside className="w-52 xl:w-64 shrink-0 h-full flex flex-col border-r border-white/10 bg-black/70 backdrop-blur-xl">
 
-      
+
       {/* ================= BRAND ================= */}
       <div className="flex flex-col items-center justify-center px-6 py-10">
         <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-iris-400 to-iris-600 bg-clip-text text-transparent">

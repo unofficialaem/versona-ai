@@ -13,16 +13,15 @@
 
   html {
     scroll-behavior: smooth;
+    /* Fluid base font size: scales between 14px (small screens) and 16px (large screens) */
+    font-size: clamp(13px, 1.2vw + 8px, 16px);
   }
 
   /* ✅ keeps layout stable (landing can still scroll normally) */
   html,
   body,
   #root {
-  
-  min-height: 100vh;         /* ✅ ensures root can grow if sections are tall */
-
-
+    min-height: 100vh;
   }
 
   body {
@@ -30,8 +29,33 @@
     background-color: #0B0B0B;
     color: #ffffff;
     overflow-x: hidden;
-    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-y: auto;
     margin: 0;
+  }
+
+  /* Responsive adjustments for different screen sizes */
+  @media (max-width: 1440px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    html {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px; /* Slightly larger for touch devices */
+    }
   }
 }
 
