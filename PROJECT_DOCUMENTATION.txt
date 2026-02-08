@@ -1,0 +1,519 @@
+================================================================================
+                    VERSONA AI - PROJECT DOCUMENTATION
+                     Premium Urdu Voice Generation Platform
+================================================================================
+
+Last Updated: February 8, 2026
+Version: 1.0.0
+
+================================================================================
+                              TABLE OF CONTENTS
+================================================================================
+
+1. PROJECT OVERVIEW
+2. TECHNOLOGY STACK
+3. PROJECT STRUCTURE
+4. BACKEND ARCHITECTURE
+   4.1 API Endpoints
+   4.2 Database Models
+   4.3 Authentication
+5. FRONTEND ARCHITECTURE
+   5.1 Pages
+   5.2 Dashboard Sections
+   5.3 Components
+6. ENVIRONMENT VARIABLES
+   6.1 Backend (.env)
+   6.2 Frontend (Vercel)
+7. DEPLOYMENT
+   7.1 Backend (Render)
+   7.2 Frontend (Vercel)
+8. FEATURES
+9. API REFERENCE
+10. TROUBLESHOOTING
+
+================================================================================
+                          1. PROJECT OVERVIEW
+================================================================================
+
+Versona AI is a premium Urdu voice generation platform that provides:
+- Text-to-Speech (TTS) for Urdu text
+- Audio-to-Audio (STS) voice conversion
+- Voice Cloning with premium female voices
+- User authentication and credit management
+- Generation history tracking
+
+Target Audience: Users who need high-quality Urdu voice synthesis.
+
+Live URLs:
+- Frontend: https://versonaai-gules.vercel.app
+- Backend:  https://versona-ai.onrender.com
+
+================================================================================
+                          2. TECHNOLOGY STACK
+================================================================================
+
+BACKEND:
+--------
+- Language:     Python 3.11.4
+- Framework:    FastAPI
+- Database:     MongoDB (MongoDB Atlas)
+- Voice API:    ElevenLabs API
+- Email:        Gmail SMTP (for password reset)
+- Hosting:      Render.com
+
+FRONTEND:
+---------
+- Framework:    React 18 with Vite
+- Styling:      Tailwind CSS
+- State:        Redux Toolkit (RTK Query)
+- Animations:   Framer Motion
+- Icons:        Lucide React
+- Notifications: React Hot Toast
+- Hosting:      Vercel
+
+================================================================================
+                          3. PROJECT STRUCTURE
+================================================================================
+
+versona-ai/
+│
+├── server.py                    # Main FastAPI application
+├── requirements.txt             # Python dependencies
+├── runtime.txt                  # Python version for Render (3.11.4)
+├── render.yaml                  # Render deployment config
+├── Procfile                     # Process file for deployment
+├── .env                        # Environment variables (local)
+│
+├── routes/                      # API route handlers
+│   ├── __init__.py
+│   ├── auth_routes.py          # Authentication endpoints
+│   ├── tts_routes.py           # Text-to-Speech endpoints
+│   ├── sts_routes.py           # Audio-to-Audio endpoints
+│   ├── voice_routes.py         # Voice Cloning endpoints
+│   └── history_routes.py       # User history endpoints
+│
+├── database/                    # Database layer
+│   ├── connection.py           # MongoDB connection manager
+│   └── models/                 # Database models and operations
+│       ├── __init__.py
+│       └── user_models.py      # User and credits models
+│
+├── execution/                   # Voice generation logic
+│   ├── tts.py                  # Text-to-Speech using ElevenLabs
+│   ├── sts.py                  # Speech-to-Speech conversion
+│   ├── clone_voice.py          # Voice cloning operations
+│   └── analytics.py            # Usage analytics
+│
+├── auth/                        # Authentication utilities
+│   ├── jwt_handler.py          # JWT token management
+│   └── password_utils.py       # Password hashing
+│
+└── versonawebapp/
+    └── frontend/               # React Frontend
+        ├── index.html
+        ├── package.json
+        ├── vite.config.js
+        ├── tailwind.config.js
+        ├── vercel.json          # Vercel SPA routing config
+        │
+        └── src/
+            ├── main.jsx         # React entry point
+            ├── App.jsx          # Root component with routing
+            ├── index.css        # Global styles
+            │
+            ├── config/
+            │   └── api.js       # API URL configuration
+            │
+            ├── pages/
+            │   ├── LandingPage.jsx
+            │   ├── LoginPage.jsx
+            │   ├── SignupPage.jsx
+            │   ├── ResetPasswordPage.jsx
+            │   └── Dashboard.jsx
+            │
+            ├── dashboard/
+            │   ├── DashboardLayout.jsx
+            │   ├── Sidebar.jsx
+            │   ├── Header.jsx
+            │   └── sections/
+            │       ├── Overview.jsx
+            │       ├── Profile.jsx
+            │       ├── TextToSpeech.jsx
+            │       ├── AudioToAudio.jsx
+            │       ├── VoiceCloning.jsx
+            │       └── History.jsx
+            │
+            ├── components/       # Reusable UI components
+            │   ├── ParticleBackground.jsx
+            │   ├── Navbar.jsx
+            │   └── ...
+            │
+            ├── store/           # Redux store
+            │   ├── store.js
+            │   └── authApi.js
+            │
+            └── assets/          # Images and icons
+                ├── mareeb.svg
+                ├── aleeza.svg
+                └── eiza.svg
+
+================================================================================
+                          4. BACKEND ARCHITECTURE
+================================================================================
+
+4.1 API ENDPOINTS
+-----------------
+
+ROOT:
+  GET  /                         → API status check
+
+AUTHENTICATION (/api):
+  POST /api/login/               → User login (returns JWT)
+  POST /api/register/            → User registration
+  GET  /api/profile/             → Get user profile (auth required)
+  PUT  /api/updateprofile/       → Update profile (auth required)
+  POST /api/change_password/     → Change password (auth required)
+  POST /api/forgot-password/     → Request password reset email
+  POST /api/reset-password/      → Reset password with token
+  GET  /api/verify-reset-token/  → Verify reset token validity
+
+TEXT-TO-SPEECH (/tts):
+  POST /tts/tts/generate/        → Generate speech from text
+  POST /tts/upload/              → Generate speech from uploaded .txt file
+  GET  /tts/suggestions/         → Get suggested/recent texts
+  GET  /tts/audio/{filename}     → Serve generated audio file
+
+AUDIO-TO-AUDIO (/sts):
+  GET  /sts/voices/              → Get available voice options
+  POST /sts/convert/             → Convert audio to different voice
+  GET  /sts/audio/{filename}     → Serve converted audio file
+
+VOICE CLONING (/voice-cloning):
+  GET  /voice-cloning/voices/    → Get premium cloned voices
+  POST /voice-cloning/generate/  → Generate with cloned voice
+  GET  /voice-cloning/audio/{f}  → Serve generated audio file
+
+HISTORY (/history):
+  GET  /history/                 → Get user generation history
+  GET  /history/stats            → Get usage statistics
+  DELETE /history/{id}           → Delete history item
+
+4.2 DATABASE MODELS
+-------------------
+
+USERS COLLECTION:
+{
+  _id: ObjectId,
+  email: String (unique),
+  username: String,
+  password_hash: String,
+  plan: String ("free" | "pro"),
+  credits_limit: Number,
+  credits_used: Number,
+  reset_token: String (optional),
+  reset_token_expires: DateTime (optional),
+  created_at: DateTime,
+  updated_at: DateTime
+}
+
+HISTORY COLLECTION:
+{
+  _id: ObjectId,
+  user_id: String,
+  action: String ("tts" | "sts" | "voice_cloning"),
+  text: String (for TTS/voice cloning),
+  audio_path: String,
+  duration: Number,
+  credits_used: Number,
+  voice_type: String (optional),
+  voice_name: String (optional),
+  created_at: DateTime
+}
+
+4.3 AUTHENTICATION
+------------------
+
+- Uses JWT (JSON Web Tokens) for stateless authentication
+- Access tokens valid for 24 hours
+- Password hashing using passlib with bcrypt
+- Protected routes use Depends(get_current_user) decorator
+
+Token Format:
+  Authorization: Bearer <jwt_token>
+
+================================================================================
+                          5. FRONTEND ARCHITECTURE
+================================================================================
+
+5.1 PAGES
+---------
+
+LandingPage.jsx    → Marketing homepage with features/pricing
+LoginPage.jsx      → User login with Google OAuth option
+SignupPage.jsx     → User registration
+ResetPasswordPage  → Password reset flow
+Dashboard.jsx      → Dashboard layout wrapper
+
+5.2 DASHBOARD SECTIONS
+----------------------
+
+Overview.jsx       → Usage statistics, activity trends, recent items
+Profile.jsx        → User profile editing, password change
+TextToSpeech.jsx   → TTS generation (manual, upload, database modes)
+AudioToAudio.jsx   → Voice conversion (upload audio, select voice)
+VoiceCloning.jsx   → Premium voice cloning (Mareeb, Aleeza, Eiza)
+History.jsx        → View all generations, play, delete
+
+5.3 KEY COMPONENTS
+------------------
+
+Styling:
+- Uses Tailwind CSS with custom color palette
+- Custom animations for premium feel
+- Responsive design with breakpoints
+- Glassmorphism effects (backdrop-blur)
+
+State Management:
+- Redux Toolkit for global state
+- RTK Query for API caching
+- localStorage for auth tokens
+
+================================================================================
+                          6. ENVIRONMENT VARIABLES
+================================================================================
+
+6.1 BACKEND (.env)
+------------------
+
+Required for local development and set in Render dashboard:
+
+# ElevenLabs API
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+
+# Voice IDs for Audio-to-Audio
+ELEVENLABS_MALE_VOICE_ID=pNInz6obpgDQGcFmaJgB
+ELEVENLABS_FEMALE_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+
+# Voice IDs for Voice Cloning
+VOICE_MAREEB_ID=your_mareeb_voice_id
+VOICE_ALEEZA_ID=your_aleeza_voice_id
+VOICE_EIZA_ID=your_eiza_voice_id
+
+# MongoDB
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/versona
+
+# JWT Authentication
+JWT_SECRET_KEY=your_super_secret_key_here
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# Email for Password Reset (Gmail SMTP)
+EMAIL_USERNAME=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+
+# Frontend URL (for password reset emails)
+FRONTEND_URL=https://versonaai-gules.vercel.app
+
+6.2 FRONTEND (Vercel Dashboard)
+-------------------------------
+
+Set in Vercel Project → Settings → Environment Variables:
+
+VITE_API_URL=https://versona-ai.onrender.com
+
+Note: Vite environment variables must be prefixed with VITE_ and are
+baked in at build time. Changing them requires a redeploy.
+
+================================================================================
+                          7. DEPLOYMENT
+================================================================================
+
+7.1 BACKEND (Render)
+--------------------
+
+Platform: Render.com (Free tier)
+Service Type: Web Service
+Region: Oregon (US West)
+
+Configuration:
+- Build Command: pip install -r requirements.txt
+- Start Command: uvicorn server:app --host 0.0.0.0 --port $PORT
+- Python Version: 3.11.4 (specified in runtime.txt)
+- Environment: Set all variables from section 6.1
+
+render.yaml:
+  services:
+    - type: web
+      name: versona-ai
+      env: python
+      buildCommand: pip install -r requirements.txt
+      startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+
+Note: Free tier services spin down after 15 min inactivity.
+First request after idle may take 30-60 seconds.
+
+7.2 FRONTEND (Vercel)
+---------------------
+
+Platform: Vercel (Free tier)
+Framework: Vite
+
+Configuration:
+- Root Directory: versonawebapp/frontend
+- Build Command: npm run build
+- Output Directory: dist
+- Framework Preset: Vite
+
+vercel.json (for SPA routing):
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
+
+Deployment: Automatic on git push to main branch
+
+================================================================================
+                          8. FEATURES
+================================================================================
+
+TEXT-TO-SPEECH:
+- Three input modes: Manual, Upload (.txt), Database (recent/suggested)
+- Urdu language validation (must be 80%+ Urdu characters)
+- 2000 character limit
+- Audio playback and download
+- Credit deduction based on character count
+
+AUDIO-TO-AUDIO:
+- Upload any audio file (max 10MB)
+- Convert to Male or Female voice
+- Real-time preview and download
+- Supports MP3 output
+
+VOICE CLONING:
+- Three premium female voices: Mareeb, Aleeza, Eiza
+- Same Urdu text input as TTS
+- 2000 character limit
+- Premium quality output
+
+USER MANAGEMENT:
+- Email/password authentication
+- Google OAuth (optional)
+- Password reset via email
+- Credit-based usage system
+- Free tier: 1000 credits
+- Pro tier: 5000 credits
+
+HISTORY:
+- View all past generations
+- Play audio directly
+- Delete individual items
+- Filter by type (TTS/STS/Clone)
+
+================================================================================
+                          9. API REFERENCE
+================================================================================
+
+AUTHENTICATION HEADER:
+  Authorization: Bearer <jwt_token>
+
+LOGIN:
+  POST /api/login/
+  Body: { "email": "user@example.com", "password": "password123" }
+  Response: { "access_token": "...", "token_type": "bearer", "user": {...} }
+
+REGISTER:
+  POST /api/register/
+  Body: { "email": "...", "username": "...", "password": "...", "confirm_password": "..." }
+  Response: { "success": true, "message": "User registered successfully" }
+
+GENERATE TTS:
+  POST /tts/tts/generate/
+  Headers: Authorization: Bearer <token>
+  Body: { "text": "اردو متن یہاں لکھیں", "mode": "manual" }
+  Response: {
+    "success": true,
+    "audio_url": "https://versona-ai.onrender.com/tts/audio/tts_xxx.mp3",
+    "duration": 2.5,
+    "text_length": 20,
+    "credits_used": 20
+  }
+
+CONVERT AUDIO:
+  POST /sts/convert/
+  Headers: Authorization: Bearer <token>
+  Body: FormData { file: <audio_file>, voice_type: "male"|"female" }
+  Response: {
+    "success": true,
+    "audio_url": "https://versona-ai.onrender.com/sts/audio/sts_xxx.mp3"
+  }
+
+GET HISTORY:
+  GET /history/
+  Headers: Authorization: Bearer <token>
+  Response: {
+    "success": true,
+    "history": [
+      { "_id": "...", "action": "tts", "text": "...", "audio_path": "...", ... }
+    ]
+  }
+
+================================================================================
+                          10. TROUBLESHOOTING
+================================================================================
+
+COMMON ISSUES:
+
+1. "Failed to fetch" error on frontend
+   - Check if VITE_API_URL is set correctly in Vercel
+   - Verify backend is running on Render
+   - Check browser console for CORS errors
+
+2. Audio not playing/downloading
+   - Backend audio URLs must be dynamic (fixed in voice route files)
+   - Check if audio files exist in .tmp/audio
+
+3. UI appears zoomed on some laptops
+   - Windows display scaling (125%, 150%) affects layout
+   - Responsive CSS fixes applied in index.css
+
+4. Login/Signup not working
+   - Verify MongoDB connection string
+   - Check JWT_SECRET_KEY is set
+   - Ensure passwords meet requirements (8+ chars)
+
+5. Backend slow to respond first time
+   - Render free tier spins down after 15 min inactivity
+   - First request wakes the server (30-60 seconds)
+
+6. Password reset email not sending
+   - Verify EMAIL_USERNAME and EMAIL_PASSWORD in .env
+   - Use Gmail App Password (not regular password)
+   - Check FRONTEND_URL is set correctly
+
+DEBUG COMMANDS:
+
+# Test backend locally
+cd "D:\Zohair's Voice Gen Project"
+uvicorn server:app --reload --port 8000
+
+# Test frontend locally
+cd versonawebapp/frontend
+npm run dev
+
+# Check backend status
+curl https://versona-ai.onrender.com/
+
+# View logs on Render
+Render Dashboard → versona-ai → Logs
+
+================================================================================
+                             END OF DOCUMENTATION
+================================================================================
+
+For questions or support, refer to:
+- README.md - Quick start guide
+- DEPLOYMENT.md - Detailed deployment instructions
+- GitHub Issues - Bug reports and feature requests
+
+================================================================================
