@@ -1,9 +1,13 @@
 """
-Email Utility - Send password reset emails via SMTP
+Email Utility - Send password reset emails
+Supports two methods:
+1. Resend API (HTTP-based, works on all hosting platforms including Render)
+2. SMTP fallback (works locally but may be blocked on some hosts)
 """
 
 import os
 import smtplib
+import requests
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
@@ -17,43 +21,14 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
+# Resend API (preferred for production)
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "Versona AI <onboarding@resend.dev>")
 
-def send_password_reset_email(to_email: str, reset_token: str) -> bool:
-    """Send password reset email with token link"""
-    
-    if not SMTP_EMAIL or not SMTP_PASSWORD:
-        print("⚠️ Email not configured. Token printed to console instead.")
-        print(f"Reset link: {FRONTEND_URL}/reset-password?token={reset_token}")
-        return False
-    
-    try:
-        # Create reset link
-        reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
-        
-        # Create email
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "Reset Your Versona AI Password"
-        msg["From"] = f"Versona AI <{SMTP_EMAIL}>"
-        msg["To"] = to_email
-        
-        # Plain text version
-        text = f"""
-Hello,
 
-You requested to reset your password for Versona AI.
-
-Click this link to reset your password:
-{reset_link}
-
-This link will expire in 1 hour.
-
-If you didn't request this, please ignore this email.
-
-- Versona AI Team
-        """
-        
-        # HTML version
-        html = f"""
+def _build_html_email(reset_link: str) -> str:
+    """Build the HTML email template"""
+    return f"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,22 +61,103 @@ If you didn't request this, please ignore this email.
     </div>
 </body>
 </html>
-        """
+    """
+
+
+def _build_plain_text(reset_link: str) -> str:
+    """Build plain text version of the email"""
+    return f"""
+Hello,
+
+You requested to reset your password for Versona AI.
+
+Click this link to reset your password:
+{reset_link}
+
+This link will expire in 1 hour.
+
+If you didn't request this, please ignore this email.
+
+- Versona AI Team
+    """
+
+
+def _send_via_resend(to_email: str, reset_link: str) -> bool:
+    """Send email using Resend HTTP API (works on Render, Vercel, etc.)"""
+    try:
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": RESEND_FROM_EMAIL,
+                "to": [to_email],
+                "subject": "Reset Your Versona AI Password",
+                "html": _build_html_email(reset_link),
+                "text": _build_plain_text(reset_link)
+            },
+            timeout=10
+        )
         
-        msg.attach(MIMEText(text, "plain"))
-        msg.attach(MIMEText(html, "html"))
+        if response.status_code == 200:
+            print(f"✅ Password reset email sent via Resend to: {to_email}")
+            return True
+        else:
+            print(f"❌ Resend API error: {response.status_code} - {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Resend API failed: {e}")
+        return False
+
+
+def _send_via_smtp(to_email: str, reset_link: str) -> bool:
+    """Send email using SMTP (fallback for local development)"""
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Reset Your Versona AI Password"
+        msg["From"] = f"Versona AI <{SMTP_EMAIL}>"
+        msg["To"] = to_email
         
-        # Send email
+        msg.attach(MIMEText(_build_plain_text(reset_link), "plain"))
+        msg.attach(MIMEText(_build_html_email(reset_link), "html"))
+        
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
             server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
         
-        print(f"✅ Password reset email sent to: {to_email}")
+        print(f"✅ Password reset email sent via SMTP to: {to_email}")
         return True
         
     except Exception as e:
-        print(f"❌ Failed to send email: {e}")
-        # Fallback: print to console
-        print(f"Reset link: {FRONTEND_URL}/reset-password?token={reset_token}")
+        print(f"❌ SMTP failed: {e}")
         return False
+
+
+def send_password_reset_email(to_email: str, reset_token: str) -> bool:
+    """
+    Send password reset email.
+    Priority: Resend API → SMTP → Console fallback
+    """
+    reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
+    
+    # Method 1: Try Resend API first (works on all platforms)
+    if RESEND_API_KEY:
+        success = _send_via_resend(to_email, reset_link)
+        if success:
+            return True
+        print("⚠️ Resend failed, trying SMTP fallback...")
+    
+    # Method 2: Try SMTP (works locally, may fail on some hosts)
+    if SMTP_EMAIL and SMTP_PASSWORD:
+        success = _send_via_smtp(to_email, reset_link)
+        if success:
+            return True
+    
+    # Method 3: Console fallback
+    print("⚠️ Email not sent. Token printed to console instead.")
+    print(f"Reset link: {reset_link}")
+    return False
