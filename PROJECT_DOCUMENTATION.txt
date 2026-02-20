@@ -3,8 +3,8 @@
                      Premium Urdu Voice Generation Platform
 ================================================================================
 
-Last Updated: February 8, 2026
-Version: 1.0.0
+Last Updated: February 20, 2026
+Version: 1.1.0
 
 ================================================================================
                               TABLE OF CONTENTS
@@ -58,7 +58,7 @@ BACKEND:
 - Framework:    FastAPI
 - Database:     MongoDB (MongoDB Atlas)
 - Voice API:    ElevenLabs API
-- Email:        Gmail SMTP (for password reset)
+- Email:        Mailjet API (for password reset delivery on Render)
 - Hosting:      Render.com
 
 FRONTEND:
@@ -307,9 +307,16 @@ JWT_SECRET_KEY=your_super_secret_key_here
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
-# Email for Password Reset (Gmail SMTP)
-EMAIL_USERNAME=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
+# Email for Password Reset (Mailjet API for Render, SMTP for local)
+MAILJET_API_KEY=your_mailjet_api_key
+MAILJET_SECRET_KEY=your_mailjet_secret_key
+MAILJET_FROM_EMAIL=your_verified_email@gmail.com
+
+# SMTP fallbacks (Manual/Local)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_EMAIL=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
 
 # Frontend URL (for password reset emails)
 FRONTEND_URL=https://versonaai-gules.vercel.app
@@ -487,9 +494,10 @@ COMMON ISSUES:
    - First request wakes the server (30-60 seconds)
 
 6. Password reset email not sending
-   - Verify EMAIL_USERNAME and EMAIL_PASSWORD in .env
-   - Use Gmail App Password (not regular password)
-   - Check FRONTEND_URL is set correctly
+   - Render blocks SMTP (ports 587/465). Verify Mailjet keys are set.
+   - Verify MAILJET_API_KEY and MAILJET_SECRET_KEY in Render environment.
+   - Support for Resend API is also included as a secondary HTTP fallback.
+   - Check FRONTEND_URL is set correctly for the reset link generation.
 
 DEBUG COMMANDS:
 
