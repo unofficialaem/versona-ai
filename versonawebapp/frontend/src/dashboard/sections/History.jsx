@@ -292,20 +292,29 @@ function EmptyState() {
   );
 }
 
+function parseUTCDate(dateStr) {
+  // Ensure UTC timestamps are treated as UTC
+  let s = String(dateStr);
+  if (!s.endsWith("Z") && !s.includes("+") && !/\d{2}:\d{2}$/.test(s.slice(-5))) {
+    s += "Z";
+  }
+  return new Date(s);
+}
+
 function groupByDate(items) {
   if (!items || items.length === 0) return {};
 
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
 
-  return [...items].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).reduce((acc, item) => {
-    const d = new Date(item.created_at).toDateString();
+  return [...items].sort((a, b) => parseUTCDate(b.created_at) - parseUTCDate(a.created_at)).reduce((acc, item) => {
+    const d = parseUTCDate(item.created_at).toDateString();
     let label = "Older Activity";
 
     if (d === today) label = "Today";
     else if (d === yesterday) label = "Yesterday";
     else {
-      label = new Date(item.created_at).toLocaleDateString(undefined, {
+      label = parseUTCDate(item.created_at).toLocaleDateString(undefined, {
         month: 'long',
         day: 'numeric'
       });
@@ -319,7 +328,7 @@ function groupByDate(items) {
 
 function formatTime(date) {
   if (!date) return "";
-  return new Date(date).toLocaleTimeString([], {
+  return parseUTCDate(date).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
   });
