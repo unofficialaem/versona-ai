@@ -1,0 +1,40 @@
+# Environment and credentials
+.env
+credentials.json
+token.json
+
+# Temporary files
+.tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node.js (frontend)
+node_modules/
+dist/
+.cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing artifacts
+*.pyc
+.pytest_cache/
+coverage/
